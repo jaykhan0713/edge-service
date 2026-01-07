@@ -29,8 +29,9 @@ jobs:
       - name: Build, test, and generate coverage
         run: ./gradlew clean check --no-daemon #test chains jacocoTestReport
 
-      - name: Run SonarCloud analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_VERBOSE: "true"
-        run: ./gradlew sonar --no-daemon -Dsonar.qualitygate.wait=true #CI will fail if quality gate fails.
+#      - name: Run SonarCloud analysis
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_VERBOSE: "true"
+#        run: ./gradlew sonar --no-daemon -Dsonar.qualitygate.wait=true #CI will fail if quality gate fails.
+#        # NOTE: Sonar temporarily disabled while AWS infra is being built
