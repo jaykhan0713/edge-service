@@ -11,9 +11,9 @@ plugins {
     id("org.sonarqube") version "6.3.1.5724"
 }
 
-group = "com.jay.template"
+group = "com.jay.edge"
 version = "0.0.1-SNAPSHOT"
-description = "service-template"
+description = "edge-service"
 
 java {
     toolchain {
@@ -86,7 +86,7 @@ tasks.withType<Test> { //test and functionalTest will use this runner
 
 //Spring boot
 springBoot {
-    mainClass.set("com.jay.template.Starter")
+    mainClass.set("com.jay.edge.Starter")
     buildInfo()
 }
 
@@ -95,7 +95,7 @@ sonarqube {
     properties {
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.organization", "jaykhan0713")
-        property("sonar.projectKey", "jaykhan0713_service-template")
+        property("sonar.projectKey", "jaykhan0713_edge-service")
 
         // coverage settings
         property("sonar.sources", "src/main/java")
@@ -120,7 +120,7 @@ sonarqube {
         property("sonar.issue.ignore.multicriteria.openapiS1710.ruleKey", "java:S1710")
         property(
             "sonar.issue.ignore.multicriteria.openapiS1710.resourceKey",
-            "src/main/java/com/jay/template/api/**"
+            "src/main/java/com/jay/edge/api/**"
         )
     }
 }
@@ -152,16 +152,16 @@ tasks.jacocoTestCoverageVerification {
             element = "CLASS"
 
             includes = listOf(
-                "com.jay.template.app.*",
-                "com.jay.template.infra.*",
-                "com.jay.template.web.*",
-                "com.jay.template.core.context.*"
+                "com.jay.edge.app.*",
+                "com.jay.edge.infra.*",
+                "com.jay.edge.web.*",
+                "com.jay.edge.core.context.*"
             )
 
             excludes = listOf(
                 //exclude any smoke test related package path.
-                "com.jay.template.*.smoke.*",
-                "com.jay.template.*.ping.*"
+                "com.jay.edge.*.smoke.*",
+                "com.jay.edge.*.ping.*"
             )
 
             limit {

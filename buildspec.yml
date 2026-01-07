@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_REPO_NAME: service-template
+    IMAGE_REPO_NAME: edge-service
   # CodeBuild sets these automatically:
   # - AWS_DEFAULT_REGION
   # - CODEBUILD_RESOLVED_SOURCE_VERSION (commit SHA)
