@@ -1,0 +1,25 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers,prometheus
+  endpoint.health.show-details: never
+  tracing:
+    sampling:
+      probability: 1.0
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+server:
+  compression: #if client sends Accept-Encoding: gzip, automatically get this feature during response
+    enabled: true
+    min-response-size: 1024
+    mime-types:
+      - application/json
