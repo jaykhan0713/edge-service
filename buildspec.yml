@@ -3,6 +3,7 @@ version: 0.2
 env:
   variables:
     IMAGE_REPO_NAME: "jay-platform/edge-service"
+    BASE_IMAGES_REPO_NAME: "jay-platform/base-images"
 
 phases:
   pre_build:
@@ -10,6 +11,7 @@ phases:
       - "echo Logging in to ECR..."
       - "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)"
       - "REPO_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+      - "BASE_REPO=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${BASE_IMAGES_REPO_NAME}"
       - "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
       - "IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}"
       - "echo Resolved image tag: ${IMAGE_TAG}"
@@ -18,7 +20,7 @@ phases:
   build:
     commands:
       - "echo Building image ${REPO_URI}:${IMAGE_TAG}"
-      - "docker build -t edge-service:${IMAGE_TAG} ."
+      - "docker build --build-arg BUILD_IMAGE=${BASE_REPO}:eclipse-temurin-25-jdk --build-arg RUNTIME_IMAGE=${BASE_REPO}:eclipse-temurin-25-jre -t edge-service:${IMAGE_TAG} ."
       - "docker tag edge-service:${IMAGE_TAG} ${REPO_URI}:${IMAGE_TAG}"
 
   post_build:
