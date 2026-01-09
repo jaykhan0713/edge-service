@@ -11,7 +11,7 @@ phases:
       - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - REPO_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}
       - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-      - test -n "${CODEBUILD_RESOLVED_SOURCE_VERSION}" || (echo "ERROR: CODEBUILD_RESOLVED_SOURCE_VERSION is empty. Repo is IMMUTABLE so we refuse to tag as latest." && exit 1)
+      - if [ -z "${CODEBUILD_RESOLVED_SOURCE_VERSION}" ]; then echo "ERROR: CODEBUILD_RESOLVED_SOURCE_VERSION is empty. Repo is IMMUTABLE."; exit 1; fi
       - IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}
       - echo "Resolved image tag: ${IMAGE_TAG}"
       - echo "Repo URI: ${REPO_URI}"
