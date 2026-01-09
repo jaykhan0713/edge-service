@@ -2,7 +2,6 @@ version: 0.2
 
 env:
   variables:
-    # Must match your ECR repo name exactly (including namespace path)
     IMAGE_REPO_NAME: jay-platform/edge-service
 
 phases:
@@ -13,23 +12,16 @@ phases:
       - REPO_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
-      # ECR repo is IMMUTABLE, so always use a unique tag.
-      # CodeBuild sets CODEBUILD_RESOLVED_SOURCE_VERSION to the commit SHA for GitHub/CodePipeline sources.
-      - |
-        if [ -z "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then
-          echo "ERROR: CODEBUILD_RESOLVED_SOURCE_VERSION is empty. Refusing to tag as 'latest' because the repo is IMMUTABLE."
-          exit 1
-        fi
+      # Fail hard if we don't have a commit SHA (repo is IMMUTABLE, so we refuse to use latest)
+      - test -n "$CODEBUILD_RESOLVED_SOURCE_VERSION" || (echo "ERROR: CODEBUILD_RESOLVED_SOURCE_VERSION is empty. Repo is IMMUTABLE so we refuse to tag as latest." && exit 1)
 
-      # Full SHA is fine, but you can shorten if you prefer: git-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
-      - IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - IMAGE_TAG=git-$CODEBUILD_RESOLVED_SOURCE_VERSION
       - echo "Resolved image tag: $IMAGE_TAG"
       - echo "Repo URI: $REPO_URI"
 
   build:
     commands:
       - echo "Building image $REPO_URI:$IMAGE_TAG"
-      # Use a local name without slashes for the build tag
       - docker build -t edge-service:$IMAGE_TAG .
       - docker tag edge-service:$IMAGE_TAG $REPO_URI:$IMAGE_TAG
 
@@ -37,9 +29,6 @@ phases:
     commands:
       - echo "Pushing to ECR..."
       - docker push $REPO_URI:$IMAGE_TAG
-
-      # IMPORTANT: "name" must match your container name in the ECS task definition.
-      # If your task definition container is named "app", keep this as-is. Otherwise update it.
       - printf '[{"name":"app","imageUri":"%s"}]' "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
       - echo "Wrote imagedefinitions.json:"
       - cat imagedefinitions.json
