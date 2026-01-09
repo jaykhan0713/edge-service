@@ -2,10 +2,8 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_REPO_NAME: edge-service
-  # CodeBuild sets these automatically:
-  # - AWS_DEFAULT_REGION
-  # - CODEBUILD_RESOLVED_SOURCE_VERSION (commit SHA)
+    # Must match your ECR repo name exactly (including namespace path)
+    IMAGE_REPO_NAME: jay-platform/edge-service
 
 phases:
   pre_build:
@@ -14,23 +12,34 @@ phases:
       - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
       - REPO_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}
+
+      # ECR repo is IMMUTABLE, so always use a unique tag.
+      # CodeBuild sets CODEBUILD_RESOLVED_SOURCE_VERSION to the commit SHA for GitHub/CodePipeline sources.
+      - |
+        if [ -z "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then
+          echo "ERROR: CODEBUILD_RESOLVED_SOURCE_VERSION is empty. Refusing to tag as 'latest' because the repo is IMMUTABLE."
+          exit 1
+        fi
+
+      # Full SHA is fine, but you can shorten if you prefer: git-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - echo "Resolved image tag: $IMAGE_TAG"
+      - echo "Repo URI: $REPO_URI"
 
   build:
     commands:
       - echo "Building image $REPO_URI:$IMAGE_TAG"
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPO_URI:$IMAGE_TAG
-      # keep 'latest' only if your ECR repo is MUTABLE; otherwise remove the next line
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPO_URI:latest
+      # Use a local name without slashes for the build tag
+      - docker build -t edge-service:$IMAGE_TAG .
+      - docker tag edge-service:$IMAGE_TAG $REPO_URI:$IMAGE_TAG
 
   post_build:
     commands:
       - echo "Pushing to ECR..."
       - docker push $REPO_URI:$IMAGE_TAG
-      # keep this only if your ECR repo is MUTABLE; otherwise remove it
-      - docker push $REPO_URI:latest
-      # IMPORTANT: "name" must match your container name in the task definition (we used "app")
+
+      # IMPORTANT: "name" must match your container name in the ECS task definition.
+      # If your task definition container is named "app", keep this as-is. Otherwise update it.
       - printf '[{"name":"app","imageUri":"%s"}]' "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
       - echo "Wrote imagedefinitions.json:"
       - cat imagedefinitions.json
