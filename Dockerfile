@@ -2,8 +2,9 @@
 # Clean, portable build. Relies only on normal Docker layer caching.
 # No BuildKit cache mounts, so it behaves the same in CI and locally.
 
-ARG BUILD_IMAGE
-ARG RUNTIME_IMAGE
+
+ARG BUILD_IMAGE=eclipse-temurin:25-jdk
+ARG RUNTIME_IMAGE=eclipse-temurin:25-jre
 
 # ---- build stage ----
 FROM ${BUILD_IMAGE} AS build
