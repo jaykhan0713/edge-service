@@ -3,6 +3,7 @@
 # No BuildKit cache mounts, so it behaves the same in CI and locally.
 
 
+# when using buildspec, will pass in ecr for base images otherwise will default to below args
 ARG BUILD_IMAGE=eclipse-temurin:25-jdk
 ARG RUNTIME_IMAGE=eclipse-temurin:25-jre
 
