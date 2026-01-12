@@ -13,7 +13,7 @@ phases:
       - "REPO_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
       - "BASE_REPO=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${BASE_IMAGES_REPO_NAME}"
       - "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-      - "IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}"
+      - "IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}-${CODEBUILD_BUILD_NUMBER}"
       - "echo Resolved image tag: ${IMAGE_TAG}"
       - "echo Repo URI: ${REPO_URI}"
 
