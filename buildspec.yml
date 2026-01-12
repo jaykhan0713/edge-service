@@ -33,7 +33,10 @@ phases:
       - 'TASKDEF_ARN=$(aws ecs describe-services --cluster ecs-cluster-prod --services edge-service-prod --query "services[0].taskDefinition" --output text)'
       - 'aws ecs describe-task-definition --task-definition "$TASKDEF_ARN" --query "taskDefinition" --output json > taskdef.json'
       - 'echo Patching taskdef.json image + removing read-only fields...'
-      - 'python -c "import json,os; td=json.load(open(\"taskdef.json\")); img=f\"{os.environ[\"REPO_URI\"]}:{os.environ[\"IMAGE_TAG\"]}\"; [c.__setitem__(\"image\",img) for c in td.get(\"containerDefinitions\",[]) if c.get(\"name\")==\"app\"]; [td.pop(k,None) for k in [\"taskDefinitionArn\",\"revision\",\"status\",\"requiresAttributes\",\"compatibilities\",\"registeredAt\",\"registeredBy\",\"deregisteredAt\"]]; json.dump(td,open(\"taskdef.json\",\"w\"),indent=2); print(\"patched image:\",img)"'
+      - 'python -c "import json,os; td=json.load(open(\"taskdef.json\")); img=os.environ.get(\"REPO_URI\",\"\")+\":\"+os.environ.get(\"IMAGE_TAG\",\"\"); \
+        [c.__setitem__(\"image\",img) for c in td.get(\"containerDefinitions\",[]) if c.get(\"name\")==\"app\"]; \
+        [td.pop(k,None) for k in [\"taskDefinitionArn\",\"revision\",\"status\",\"requiresAttributes\",\"compatibilities\",\"registeredAt\",\"registeredBy\",\"deregisteredAt\"]]; \
+        json.dump(td,open(\"taskdef.json\",\"w\"),indent=2); print(\"patched image:\",img)"'
       - 'echo Generated files:'
       - 'ls -la appspec.yaml taskdef.json'
       - 'echo appspec.yaml:'
