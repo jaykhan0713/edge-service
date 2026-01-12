@@ -27,8 +27,8 @@ post_build:
   commands:
     - "echo Pushing to ECR..."
     - "docker push ${REPO_URI}:${IMAGE_TAG}"
-    - "echo Generating appspec.yaml..."ppspec.y
-    - "printf \"version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: taskdef.json\n        LoadBalancerInfo:\n          ContainerName: app\n          ContainerPort: 8080\n\" > aaml"
+    - "echo Generating appspec.yaml..."
+    - "printf \"version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: taskdef.json\n        LoadBalancerInfo:\n          ContainerName: app\n          ContainerPort: 8080\n\" > appspec.yaml"
     - "echo Fetching current task definition from ECS service..."
     - "TASKDEF_ARN=$(aws ecs describe-services --cluster ecs-cluster-prod --services edge-service-prod --query 'services[0].taskDefinition' --output text)"
     - "aws ecs describe-task-definition --task-definition \"$TASKDEF_ARN\" --query 'taskDefinition' --output json > taskdef.json"
