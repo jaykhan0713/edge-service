@@ -23,25 +23,21 @@ phases:
       - "docker build --build-arg BUILD_IMAGE=${BASE_REPO}:eclipse-temurin-25-jdk --build-arg RUNTIME_IMAGE=${BASE_REPO}:eclipse-temurin-25-jre -t edge-service:${IMAGE_TAG} ."
       - "docker tag edge-service:${IMAGE_TAG} ${REPO_URI}:${IMAGE_TAG}"
 
-post_build:
-  commands:
-    - "echo Pushing to ECR..."
-    - "docker push ${REPO_URI}:${IMAGE_TAG}"
-    - "echo Generating appspec.yaml..."
-    - "printf \"version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: taskdef.json\n        LoadBalancerInfo:\n          ContainerName: app\n          ContainerPort: 8080\n\" > appspec.yaml"
-    - "echo Fetching current task definition from ECS service..."
-    - "TASKDEF_ARN=$(aws ecs describe-services --cluster ecs-cluster-prod --services edge-service-prod --query 'services[0].taskDefinition' --output text)"
-    - "aws ecs describe-task-definition --task-definition \"$TASKDEF_ARN\" --query 'taskDefinition' --output json > taskdef.json"
-    - "echo Patching taskdef.json image + removing read-only fields..."
-    - "python -c \"import json,os; td=json.load(open('taskdef.json')); img=f\\\"{os.environ['REPO_URI']}:{os.environ['IMAGE_TAG']}\\\"; \
-for c in td.get('containerDefinitions',[]): \
-    (c.__setitem__('image',img) if c.get('name')=='app' else None); \
-[td.pop(k,None) for k in ['taskDefinitionArn','revision','status','requiresAttributes','compatibilities','registeredAt','registeredBy','deregisteredAt']]; \
-json.dump(td,open('taskdef.json','w'),indent=2); print('taskdef.json patched for image:',img)\""
-    - "echo Generated files:"
-    - "ls -la appspec.yaml taskdef.json"
-    - "echo appspec.yaml:"
-    - "cat appspec.yaml"
+  post_build:
+    commands:
+      - 'echo Pushing to ECR...'
+      - 'docker push ${REPO_URI}:${IMAGE_TAG}'
+      - 'echo Generating appspec.yaml...'
+      - 'printf "version: 0.0\nResources:\n  - TargetService:\n      Type: AWS::ECS::Service\n      Properties:\n        TaskDefinition: taskdef.json\n        LoadBalancerInfo:\n          ContainerName: app\n          ContainerPort: 8080\n" > appspec.yaml'
+      - 'echo Fetching current task definition from ECS service...'
+      - 'TASKDEF_ARN=$(aws ecs describe-services --cluster ecs-cluster-prod --services edge-service-prod --query "services[0].taskDefinition" --output text)'
+      - 'aws ecs describe-task-definition --task-definition "$TASKDEF_ARN" --query "taskDefinition" --output json > taskdef.json'
+      - 'echo Patching taskdef.json image + removing read-only fields...'
+      - 'python -c "import json,os; td=json.load(open(\"taskdef.json\")); img=f\"{os.environ[\"REPO_URI\"]}:{os.environ[\"IMAGE_TAG\"]}\"; [c.__setitem__(\"image\",img) for c in td.get(\"containerDefinitions\",[]) if c.get(\"name\")==\"app\"]; [td.pop(k,None) for k in [\"taskDefinitionArn\",\"revision\",\"status\",\"requiresAttributes\",\"compatibilities\",\"registeredAt\",\"registeredBy\",\"deregisteredAt\"]]; json.dump(td,open(\"taskdef.json\",\"w\"),indent=2); print(\"patched image:\",img)"'
+      - 'echo Generated files:'
+      - 'ls -la appspec.yaml taskdef.json'
+      - 'echo appspec.yaml:'
+      - 'cat appspec.yaml'
 
 artifacts:
   files:
