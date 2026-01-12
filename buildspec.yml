@@ -25,10 +25,19 @@ phases:
 
   post_build:
     commands:
-      - 'echo Pushing to ECR...'
-      - 'docker push ${REPO_URI}:${IMAGE_TAG}'
+      - 'set -e'
+      - 'IMAGE_URI=${REPO_URI}:${IMAGE_TAG}'
+      - 'echo Pushing to ECR: ${IMAGE_URI}'
+      - 'docker push ${IMAGE_URI}'
+      - 'echo Fetching current task definition from ECS service...'
+      - 'TASKDEF_ARN=$(aws ecs describe-services --cluster ecs-cluster-prod --services edge-service-prod --query "services[0].taskDefinition" --output text)'
+      - 'echo Current taskdef ARN: ${TASKDEF_ARN}'
+      - 'aws ecs describe-task-definition --task-definition "${TASKDEF_ARN}" --query "taskDefinition" --output json > taskdef.json'
+      - 'echo Patching taskdef.json...'
+      - 'export IMAGE_URI'
       - 'python deploy/patch_taskdef.py'
       - 'cp deploy/appspec.yaml appspec.yaml'
+      - 'echo Generated files:'
       - 'ls -la appspec.yaml taskdef.json'
 
 artifacts:
