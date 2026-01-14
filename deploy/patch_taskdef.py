@@ -6,7 +6,7 @@ IMAGE_URI = os.environ["IMAGE_URI"]
 with open("taskdef.json", "r") as f:
     td = json.load(f)
 
-# Remove task-level readonly / describe-only fields
+# Remove task-level readonly / describe-only fields. Note that readonly fields should already removed- this is a guard
 readonly = [
     "taskDefinitionArn",
     "revision",
