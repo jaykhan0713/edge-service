@@ -9,7 +9,15 @@ management:
       exposure:
         include: health,info,metrics,loggers,prometheus,env
   endpoint.health.show-details: never
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://127.0.0.1:4318/v1/traces
   tracing:
+    export:
+      otlp:
+        enabled: true #enable exporting SPANS
     sampling:
       probability: 1.0
   prometheus:
