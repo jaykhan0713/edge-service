@@ -15,7 +15,7 @@ import com.jay.edge.web.servlet.error.ErrorResponseWriter;
 @Configuration
 public class ServletFilterConfiguration {
 
-    private static final String API_WILDCARD = "/*";
+    private static final String API_WILDCARD = "/api/*";
     private static final String BULKHEAD_FILTER_INSTANCE_NAME = "webBulkheadFilter";
 
     @Bean
