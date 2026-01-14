@@ -132,7 +132,7 @@ platform: # namespace for Spring configuration keys
             # Note that connect and read timeouts are worst case scenario guardrails
             # should be below the sum of those + give headroom for expected in-app processing
             # to meet Service Level Objectives (SLOs)
-            slow-call-duration-threshold: 2.5s
+            slow-call-duration-threshold: 2500ms
 
             # Percentage of slow calls required to open the breaker
             # Note that you can have slow success and slow failure recorded in sliding window.
