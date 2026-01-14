@@ -36,6 +36,7 @@ phases:
       - 'cp deploy/appspec.yaml appspec.yaml'
       - 'echo Generated files:'
       - 'ls -la appspec.yaml taskdef.json'
+      - 'cat taskdef.json'
 
 artifacts:
   files:
