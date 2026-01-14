@@ -49,7 +49,10 @@
       "image": "454842419646.dkr.ecr.us-west-2.amazonaws.com/jay-platform/adot-collector:git-initial",
       "cpu": 0,
       "essential": false,
-      "portMappings": [],
+      "portMappings": [
+        { "containerPort": 4318, "hostPort": 4318, "protocol": "tcp" },
+        { "containerPort": 4317, "hostPort": 4317, "protocol": "tcp" }
+      ],
       "environment": [
         {
           "name": "SERVICE_NAME",
