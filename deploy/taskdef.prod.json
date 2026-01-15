@@ -1,7 +1,7 @@
 {
   "family": "jay-platform-edge-service-prod",
-  "taskRoleArn": "arn:aws:iam::454842419646:role/jay-platform-edge-task-role-prod",
-  "executionRoleArn": "arn:aws:iam::454842419646:role/jay-platform-edge-task-execution-prod",
+  "taskRoleArn": "__TASK_ROLE_ARN__",
+  "executionRoleArn": "__EX_ROLE_ARN__",
   "networkMode": "awsvpc",
   "requiresCompatibilities": [
     "FARGATE"
@@ -46,7 +46,7 @@
     },
     {
       "name": "adot-collector",
-      "image": "454842419646.dkr.ecr.us-west-2.amazonaws.com/jay-platform/adot-collector:git-initial",
+      "image": "__ADOT_COL_IMAGE__",
       "cpu": 0,
       "essential": false,
       "portMappings": [
@@ -64,7 +64,7 @@
         },
         {
           "name": "AMP_REMOTE_WRITE_ENDPOINT",
-          "value": "https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-2eea101e-6aad-4579-a198-d29198b23426/api/v1/remote_write"
+          "value": "__AMP_REMOTE_WRITE_ENDPOINT__"
         },
         {
           "name": "ENV",

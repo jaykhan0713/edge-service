@@ -4,6 +4,7 @@ env:
   variables:
     IMAGE_REPO_NAME: "jay-platform/edge-service"
     BASE_IMAGES_REPO_NAME: "jay-platform/base-images"
+    ADOT_COL_IMAGE_REPO_NAME: "jay-platform/adot-collector"
 
 phases:
   pre_build:
@@ -11,32 +12,41 @@ phases:
       - "echo Logging in to ECR..."
       - "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)"
       - "REPO_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
-      - "BASE_REPO=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${BASE_IMAGES_REPO_NAME}"
+      - "BASE_REPO_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${BASE_IMAGES_REPO_NAME}"
       - "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
       - "IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}-${CODEBUILD_BUILD_NUMBER}"
       - "echo Resolved image tag: ${IMAGE_TAG}"
       - "echo Repo URI: ${REPO_URI}"
+      - "echo computing and exporting taskdef variables..."
+      - "export TASK_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/jay-platform-edge-task-role-prod"
+      - "echo TASK_ROLE_ARN=${TASK_ROLE_ARN}"
+      - "export EX_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/jay-platform-edge-task-execution-prod"
+      - "echo EX_ROLE_ARN=${EX_ROLE_ARN}"
+      - "export ADOT_COL_IMAGE_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ADOT_COL_IMAGE_REPO_NAME}:git-initial"
+      - "echo ADOT_COL_IMAGE_URI=${ADOT_COL_URI}"
+      - "export AMP_REMOTE_WRITE_ENDPOINT=https://aps-workspaces.${AWS_DEFAULT_REGION}.amazonaws.com/workspaces/ws-2eea101e-6aad-4579-a198-d29198b23426/api/v1/remote_write"
+      - "echo AMP_REMOTE_WRITE_ENDPOINT={$AMP_REMOTE_WRITE_ENDPOINT}"
 
   build:
     commands:
       - "echo Building image ${REPO_URI}:${IMAGE_TAG}"
-      - "docker build --build-arg BUILD_IMAGE=${BASE_REPO}:eclipse-temurin-25-jdk --build-arg RUNTIME_IMAGE=${BASE_REPO}:eclipse-temurin-25-jre -t edge-service:${IMAGE_TAG} ."
+      - "docker build --build-arg BUILD_IMAGE=${BASE_REPO_URI}:eclipse-temurin-25-jdk --build-arg RUNTIME_IMAGE=${BASE_REPO_URI}:eclipse-temurin-25-jre -t edge-service:${IMAGE_TAG} ."
       - "docker tag edge-service:${IMAGE_TAG} ${REPO_URI}:${IMAGE_TAG}"
 
   post_build:
     commands:
-      - 'set -e'
-      - 'IMAGE_URI=${REPO_URI}:${IMAGE_TAG}'
-      - 'echo Pushing to ECR: ${IMAGE_URI}'
-      - 'docker push ${IMAGE_URI}'
-      - 'export IMAGE_URI'
-      - 'cp deploy/taskdef.prod.json taskdef.json'
-      - 'echo Patching taskdef.json...'
-      - 'python deploy/patch_taskdef.py'
-      - 'cp deploy/appspec.yaml appspec.yaml'
-      - 'echo Generated files:'
-      - 'ls -la appspec.yaml taskdef.json'
-      - 'cat taskdef.json'
+      - "set -e"
+      - "IMAGE_URI=${REPO_URI}:${IMAGE_TAG}"
+      - "echo Pushing to ECR: ${IMAGE_URI}"
+      - "docker push ${IMAGE_URI}"
+      - "export IMAGE_URI"
+      - "cp deploy/taskdef.prod.json taskdef.json"
+      - "echo Patching taskdef.json..."
+      - "python deploy/patch_taskdef.py"
+      - "cp deploy/appspec.yaml appspec.yaml"
+      - "echo Generated files:"
+      - "ls -la appspec.yaml taskdef.json"
+      - "cat taskdef.json"
 
 artifacts:
   files:

@@ -1,1 +1,1 @@
-- Take out AWS arn/paths hardcoding and dynamically generate it in buildspec.yml, then patch it in with python script
+- (VIA SSM?) Take out AWS arn/paths hardcoding and dynamically generate it in buildspec.yml, then patch it in with python script
