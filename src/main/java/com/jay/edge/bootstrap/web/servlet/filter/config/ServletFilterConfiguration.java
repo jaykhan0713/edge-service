@@ -15,7 +15,7 @@ import com.jay.edge.web.servlet.error.ErrorResponseWriter;
 @Configuration
 public class ServletFilterConfiguration {
 
-    private static final String API_WILDCARD = "/api/*";
+    private static final String API_PATH_MAPPING = "/api/*"; //servlet mapping matches anything at *
     private static final String BULKHEAD_FILTER_INSTANCE_NAME = "webBulkheadFilter";
 
     @Bean
@@ -25,7 +25,7 @@ public class ServletFilterConfiguration {
 
         registration.setFilter(identityFilter);
         registration.setOrder(FilterOrders.IDENTITY.order());
-        registration.addUrlPatterns(API_WILDCARD);
+        registration.addUrlPatterns(API_PATH_MAPPING);
 
         return registration;
     }
@@ -37,7 +37,7 @@ public class ServletFilterConfiguration {
 
         registration.setFilter(mdcFilter);
         registration.setOrder(FilterOrders.MDC.order());
-        registration.addUrlPatterns(API_WILDCARD);
+        registration.addUrlPatterns(API_PATH_MAPPING);
 
         return registration;
     }
@@ -56,7 +56,7 @@ public class ServletFilterConfiguration {
 
         registration.setFilter(bulkheadFilter);
         registration.setOrder(FilterOrders.BULKHEAD.order());
-        registration.addUrlPatterns(API_WILDCARD);
+        registration.addUrlPatterns(API_PATH_MAPPING);
 
         return registration;
     }
