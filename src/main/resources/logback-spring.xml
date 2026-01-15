@@ -12,7 +12,7 @@
 
     <!-- index friendly pattern for lookups -->
     <property name="SIMPLE_PATTERN"
-              value='[%thread] logger="%logger{36}" level="%-5level" date="%d{yyyy-MM-dd HH:mm:ss.SSS}" msg="%msg"%n'/>
+              value='[%thread] logger="%logger{36}" level="%level" date="%d{yyyy-MM-dd HH:mm:ss.SSS}" msg="%msg"%n'/>
 
     <property name="BOOTSTRAP_PATTERN"
               value='[%thread] logger="%logger{36}" level="%level" date="%d{yyyy-MM-dd HH:mm:ss.SSS}" msg="%msg"%n'/>
