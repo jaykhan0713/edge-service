@@ -14,7 +14,7 @@
   },
   "containerDefinitions": [
     {
-      "name": "app",
+      "name": "__APP_CONTAINER_NAME__",
       "image": "__APP_IMAGE__",
       "cpu": 0,
       "essential": true,
@@ -45,7 +45,7 @@
       "systemControls": []
     },
     {
-      "name": "adot-collector",
+      "name": "__ADOT_COL_CONTAINER_NAME__",
       "image": "__ADOT_COL_IMAGE__",
       "cpu": 0,
       "essential": false,
@@ -73,6 +73,14 @@
         {
           "name": "APP_PORT",
           "value": "8080"
+        },
+        {
+          "name": "APP_CONTAINER_NAME",
+          "value": "__APP_CONTAINER_NAME__"
+        },
+        {
+          "name": "GIT_SHA_BUILD",
+          "value": "__GIT_SHA_BUILD__"
         }
       ],
       "mountPoints": [],
