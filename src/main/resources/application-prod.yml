@@ -16,10 +16,11 @@ management:
       export:
         otlp:
           endpoint: http://127.0.0.1:4317
+          transport: grpc
   tracing:
     export:
       otlp:
-        enabled: true #enable exporting SPANS
+        enabled: true #enable exporting SPANS through autoconfiguration
     sampling:
       probability: 1.0
   prometheus:
