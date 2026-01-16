@@ -16,8 +16,10 @@
     {
       "name": "__APP_CONTAINER_NAME__",
       "image": "__APP_IMAGE__",
-      "cpu": 0,
+      "cpu": 448,
+      "memory": 768,
       "essential": true,
+      "stopTimeout": 30,
       "portMappings": [
         {
           "containerPort": 8080,
@@ -29,6 +31,10 @@
         {
           "name": "SPRING_PROFILES_ACTIVE",
           "value": "prod"
+        },
+        {
+          "name": "JAVA_TOOL_OPTIONS",
+          "value": "-Xms512m -Xmx512m"
         }
       ],
       "mountPoints": [],
@@ -47,7 +53,8 @@
     {
       "name": "__ADOT_COL_CONTAINER_NAME__",
       "image": "__ADOT_COL_IMAGE__",
-      "cpu": 0,
+      "cpu": 64,
+      "memory": 256,
       "essential": false,
       "portMappings": [
         { "containerPort": 4318, "hostPort": 4318, "protocol": "tcp" },

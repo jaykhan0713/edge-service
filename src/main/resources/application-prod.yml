@@ -2,18 +2,20 @@ spring:
   config:
     activate:
       on-profile: prod
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,loggers,prometheus,env
+        include: '*' # expose all only for tuning initially, then keep only what is needed
   endpoint.health.show-details: never
   opentelemetry:
     tracing:
       export:
         otlp:
-          endpoint: http://127.0.0.1:4318/v1/traces
+          endpoint: http://127.0.0.1:4317
   tracing:
     export:
       otlp:
@@ -26,6 +28,7 @@ management:
         enabled: true
 
 server:
+  shutdown: graceful
   compression: #if client sends Accept-Encoding: gzip, automatically get this feature during response
     enabled: true
     min-response-size: 1024
