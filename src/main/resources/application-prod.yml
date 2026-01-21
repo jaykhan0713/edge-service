@@ -10,7 +10,7 @@ management:
     web:
       exposure:
         include: '*' # expose all only for tuning initially, then keep only what is needed
-  endpoint.health.show-details: never
+  # endpoint.health.show-details: never # uncomment when service is ready
   opentelemetry:
     tracing:
       export:
