@@ -63,7 +63,7 @@
       "environment": [
         {
           "name": "SERVICE_NAME",
-          "value": "edge-service-prod"
+          "value": "edge-service"
         },
         {
           "name": "AWS_REGION",
