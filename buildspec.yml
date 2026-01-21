@@ -20,6 +20,8 @@ phases:
       - "echo Resolved image tag: ${IMAGE_TAG}"
       - "echo Repo URI: ${REPO_URI}"
       - "echo computing and exporting taskdef variables to be patched in by python..."
+      - "export IMAGE_URI=${REPO_URI}:${IMAGE_TAG}"
+      - "echo IMAGE_URI=${IMAGE_URI}"
       - "export TASK_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/jay-platform-edge-task-role-prod"
       - "echo TASK_ROLE_ARN=${TASK_ROLE_ARN}"
       - "export EX_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/jay-platform-edge-task-execution-prod"
@@ -38,17 +40,15 @@ phases:
 
   build:
     commands:
-      - "echo Building image ${REPO_URI}:${IMAGE_TAG}"
+      - "echo Building image ${IMAGE_URI}"
       - "docker build --build-arg BUILD_IMAGE=${BASE_REPO_URI}:eclipse-temurin-25-jdk --build-arg RUNTIME_IMAGE=${BASE_REPO_URI}:eclipse-temurin-25-jre -t edge-service:${IMAGE_TAG} ."
-      - "docker tag edge-service:${IMAGE_TAG} ${REPO_URI}:${IMAGE_TAG}"
+      - "docker tag edge-service:${IMAGE_TAG} ${IMAGE_URI}"
 
   post_build:
     commands:
       - "set -e"
-      - "IMAGE_URI=${REPO_URI}:${IMAGE_TAG}"
       - "echo Pushing to ECR: ${IMAGE_URI}"
       - "docker push ${IMAGE_URI}"
-      - "export IMAGE_URI"
       - "cp deploy/taskdef.prod.json taskdef.json"
       - "echo Patching taskdef.json..."
       - "python deploy/patch_taskdef.py"

@@ -6,4 +6,4 @@ Resources:
         TaskDefinition: <TASK_DEFINITION>
         LoadBalancerInfo:
           ContainerName: app
-          ContainerPort: 8080
+          ContainerPort: 8080 # Think of this as ENI port and what CodeDeploy reaches, not app:8080
