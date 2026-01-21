@@ -24,7 +24,7 @@ phases:
       - "echo TASK_ROLE_ARN=${TASK_ROLE_ARN}"
       - "export EX_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/jay-platform-edge-task-execution-prod"
       - "echo EX_ROLE_ARN=${EX_ROLE_ARN}"
-      - "export ADOT_COL_IMAGE_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ADOT_COL_IMAGE_REPO_NAME}:git-initial"
+      - "export ADOT_COL_IMAGE_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ADOT_COL_IMAGE_REPO_NAME}:stable"
       - "echo ADOT_COL_IMAGE_URI=${ADOT_COL_IMAGE_URI}"
       - "export AMP_REMOTE_WRITE_ENDPOINT=https://aps-workspaces.${AWS_DEFAULT_REGION}.amazonaws.com/workspaces/ws-2eea101e-6aad-4579-a198-d29198b23426/api/v1/remote_write"
       - "echo AMP_REMOTE_WRITE_ENDPOINT=${AMP_REMOTE_WRITE_ENDPOINT}"

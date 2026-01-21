@@ -90,6 +90,12 @@
           "value": "__GIT_SHA_BUILD__"
         }
       ],
+      "secrets": [
+        {
+          "name": "OTEL_CONFIG_YAML",
+          "valueFrom": "/jay-platform/prod/core/observability/adot/otel-config.yaml"
+        }
+      ],
       "mountPoints": [],
       "volumesFrom": [],
       "dockerLabels": {},

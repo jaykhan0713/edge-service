@@ -55,7 +55,7 @@ management:
       probability: 1.0
     export:
       otlp:
-        # to enable AUTOCONFIGURATION, must be present (configures correct handler Propagators etc)
+        # NOTE: to enable AUTOCONFIGURATION, must be present (configures correct handler Propagators etc)
         enabled: false # tracer still exists, but SPANS don't leave the process
 
   otlp:
