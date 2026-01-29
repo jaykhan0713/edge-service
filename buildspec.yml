@@ -1,63 +1,33 @@
 version: 0.2
 
-env:
-  variables:
-    IMAGE_REPO_NAME: "jay-platform/edge-service"
-    BASE_IMAGES_REPO_NAME: "jay-platform/base-images"
-    ADOT_COL_IMAGE_REPO_NAME: "jay-platform/adot-collector"
-    APP_CONTAINER_NAME: "app"
-    ADOT_COL_CONTAINER_NAME: "adot-collector"
-
 phases:
   pre_build:
     commands:
+      - "set -e"
       - "echo Logging in to ECR..."
-      - "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)"
-      - "REPO_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
-      - "BASE_REPO_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${BASE_IMAGES_REPO_NAME}"
-      - "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-      - "IMAGE_TAG=git-${CODEBUILD_RESOLVED_SOURCE_VERSION}-${CODEBUILD_BUILD_NUMBER}"
-      - "echo Resolved image tag: ${IMAGE_TAG}"
-      - "echo Repo URI: ${REPO_URI}"
-      - "echo computing and exporting taskdef variables to be patched in by python..."
-      - "export IMAGE_URI=${REPO_URI}:${IMAGE_TAG}"
+      - "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+      - "SHORT_SHA=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}"
+      - "IMAGE_TAG=git-${SHORT_SHA}-${CODEBUILD_BUILD_NUMBER}"
+      - "IMAGE_URI=${ECR_REPO_URI}:${IMAGE_TAG}"
+      - "BUILD_IMAGE=${BASE_IMAGES_REPO_URI}:eclipse-temurin-25-jdk"
+      - "RUNTIME_IMAGE=${BASE_IMAGES_REPO_URI}:eclipse-temurin-25-jre"
       - "echo IMAGE_URI=${IMAGE_URI}"
-      - "export TASK_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/jay-platform-edge-task-role-prod"
-      - "echo TASK_ROLE_ARN=${TASK_ROLE_ARN}"
-      - "export EX_ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/jay-platform-edge-task-execution-prod"
-      - "echo EX_ROLE_ARN=${EX_ROLE_ARN}"
-      - "export ADOT_COL_IMAGE_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ADOT_COL_IMAGE_REPO_NAME}:stable"
-      - "echo ADOT_COL_IMAGE_URI=${ADOT_COL_IMAGE_URI}"
-      - "export AMP_REMOTE_WRITE_ENDPOINT=https://aps-workspaces.${AWS_DEFAULT_REGION}.amazonaws.com/workspaces/ws-2eea101e-6aad-4579-a198-d29198b23426/api/v1/remote_write"
-      - "echo AMP_REMOTE_WRITE_ENDPOINT=${AMP_REMOTE_WRITE_ENDPOINT}"
-      - "export APP_CONTAINER_NAME"
-      - "echo APP_CONTAINER_NAME=${APP_CONTAINER_NAME}"
-      - "export ADOT_COL_CONTAINER_NAME"
-      - "echo ADOT_COL_CONTAINER_NAME=${ADOT_COL_CONTAINER_NAME}"
-      - "SHORT_GIT_SHA_BUILD=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:6}-${CODEBUILD_BUILD_NUMBER}"
-      - "export GIT_SHA_BUILD=${SHORT_GIT_SHA_BUILD}"
-      - "echo GIT_SHA_BUILD=${GIT_SHA_BUILD}"
+      - "echo BUILD_IMAGE=${BUILD_IMAGE}"
+      - "echo RUNTIME_IMAGE=${RUNTIME_IMAGE}"
 
   build:
     commands:
-      - "echo Building image ${IMAGE_URI}"
-      - "docker build --build-arg BUILD_IMAGE=${BASE_REPO_URI}:eclipse-temurin-25-jdk --build-arg RUNTIME_IMAGE=${BASE_REPO_URI}:eclipse-temurin-25-jre -t edge-service:${IMAGE_TAG} ."
-      - "docker tag edge-service:${IMAGE_TAG} ${IMAGE_URI}"
+      - "set -e"
+      - "echo Building image..."
+      - "docker build --build-arg BUILD_IMAGE=${BUILD_IMAGE} --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE} -t app:${IMAGE_TAG} ."
+      - "docker tag app:${IMAGE_TAG} ${IMAGE_URI}"
 
   post_build:
     commands:
       - "set -e"
-      - "echo Pushing to ECR: ${IMAGE_URI}"
+      - "echo Pushing image..."
       - "docker push ${IMAGE_URI}"
-      - "cp deploy/taskdef.prod.json taskdef.json"
-      - "echo Patching taskdef.json..."
-      - "python deploy/patch_taskdef.py"
-      - "cp deploy/appspec.yaml appspec.yaml"
-      - "echo Generated files:"
-      - "ls -la appspec.yaml taskdef.json"
-      - "cat taskdef.json"
+      - "echo Done."
 
 artifacts:
-  files:
-    - "appspec.yaml"
-    - "taskdef.json"
+  files: []
