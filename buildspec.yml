@@ -6,7 +6,7 @@ phases:
       - "set -e"
       - "echo Logging in to ECR..."
       - "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
-      - "SHORT_SHA=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}"
+      - "SHORT_SHA=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | cut -c1-7)"
       - "IMAGE_TAG=git-${SHORT_SHA}-${CODEBUILD_BUILD_NUMBER}"
       - "IMAGE_URI=${ECR_REPO_URI}:${IMAGE_TAG}"
       - "BUILD_IMAGE=${BASE_IMAGES_REPO_URI}:eclipse-temurin-25-jdk"
