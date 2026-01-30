@@ -6,6 +6,7 @@
 # when using buildspec, will pass in ecr for base images otherwise will default to below args
 ARG BUILD_IMAGE=eclipse-temurin:25-jdk
 ARG RUNTIME_IMAGE=eclipse-temurin:25-jre
+ARG VERSION
 
 # ---- build stage ----
 FROM ${BUILD_IMAGE} AS build
@@ -31,6 +32,8 @@ RUN ./gradlew --no-daemon -x test clean bootJar
 
 # ---- runtime stage ----
 FROM ${RUNTIME_IMAGE}
+ARG VERSION
+ENV VERSION="${VERSION}"
 WORKDIR /app
 
 # Copy the single boot jar output (no wildcards).

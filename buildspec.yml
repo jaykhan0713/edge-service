@@ -19,14 +19,24 @@ phases:
     commands:
       - "set -e"
       - "echo Building image..."
-      - "docker build --build-arg BUILD_IMAGE=${BUILD_IMAGE} --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE} -t app:${IMAGE_TAG} ."
-      - "docker tag app:${IMAGE_TAG} ${IMAGE_URI}"
+      - "VERSION=${IMAGE_TAG}"
+      - "echo VERSION=${VERSION}"
+      - "docker build --build-arg VERSION=${VERSION} --build-arg BUILD_IMAGE=${BUILD_IMAGE} --build-arg RUNTIME_IMAGE=${RUNTIME_IMAGE} -t ${IMAGE_URI} ."
 
   post_build:
     commands:
       - "set -e"
       - "echo Pushing image..."
       - "docker push ${IMAGE_URI}"
+      - |
+        if [ -n "${BOOTSTRAP_TAG:-}" ]; then
+          echo "Also tagging as ${BOOTSTRAP_TAG}..."
+          BOOTSTRAP_IMAGE_URI="${ECR_REPO_URI}:${BOOTSTRAP_TAG}"
+          docker tag "${IMAGE_URI}" "${BOOTSTRAP_IMAGE_URI}"
+          docker push "${BOOTSTRAP_IMAGE_URI}"
+        else
+          echo "BOOTSTRAP_TAG not set, skipping bootstrap tag push."
+        fi
       - "echo Done."
 
 artifacts:
