@@ -30,7 +30,6 @@ management:
   metrics:
     tags:
       env: ${SPRING_PROFILES_ACTIVE:unknown}
-      service: ${SERVICE_NAME:edge-service}
       version: ${VERSION:unknown}
 
 server:
