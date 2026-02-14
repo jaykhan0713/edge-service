@@ -28,8 +28,29 @@ configurations {
     }
 }
 
+fun gradleProp(name: String): String? =
+    (findProperty(name) as String?)?.takeIf { it.isNotBlank() }
+
+val codeartifactEndpoint = gradleProp("codeartifactEndpoint")
+val codeartifactAuthToken = gradleProp("codeartifactAuthToken")
+
 repositories {
     mavenCentral()
+
+    if (!codeartifactEndpoint.isNullOrBlank() && !codeartifactAuthToken.isNullOrBlank()) {
+        maven {
+            url = uri(codeartifactEndpoint)
+
+            credentials {
+                username = "aws"
+                password = codeartifactAuthToken
+            }
+
+            content {
+                includeGroup("com.jay.voyager")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -54,6 +75,9 @@ dependencies {
     // no boot4 r4j starter yet. Need for autoconfig of source (yaml) properties
     implementation("io.github.resilience4j:resilience4j-spring-boot3")
     implementation("io.github.resilience4j:resilience4j-micrometer")
+
+    //internal service DTOs
+    implementation("com.jay.voyager:voyager-openapi-dtos:0.0.1-SNAPSHOT")
 
     //IDE mapping such as yml configs with javadocs, generates meta-data json at build time.
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
