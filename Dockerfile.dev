@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1.7
+
 # ---- Dockerfile.dev (local development) ----
 # Same behavior as production, but adds BuildKit cache mounts for fast rebuilds.
 # Requires BuildKit enabled locally: DOCKER_BUILDKIT=1
@@ -6,6 +7,15 @@
 # ---- build stage ----
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
+
+# arguments passed in
+ARG CODEARTIFACT_AUTH_TOKEN
+ARG CODEARTIFACT_ENDPOINT
+
+# Get DTO from pointed repo
+ENV DISABLE_COMPOSITE_DTO=true
+ENV CODEARTIFACT_AUTH_TOKEN=${CODEARTIFACT_AUTH_TOKEN}
+ENV CODEARTIFACT_ENDPOINT=${CODEARTIFACT_ENDPOINT}
 
 # Copy Gradle wrapper FIRST so layers cache well
 COPY gradlew gradlew.bat ./

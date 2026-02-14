@@ -28,11 +28,15 @@ configurations {
     }
 }
 
-fun gradleProp(name: String): String? =
-    (findProperty(name) as String?)?.takeIf { it.isNotBlank() }
+fun propOrEnv(propName: String, envName: String): String? {
+    val p = providers.gradleProperty(propName).orNull
+    if (!p.isNullOrBlank()) return p
+    val e = System.getenv(envName)
+    return if (e.isNullOrBlank()) null else e
+}
 
-val codeartifactEndpoint = gradleProp("codeartifactEndpoint")
-val codeartifactAuthToken = gradleProp("codeartifactAuthToken")
+val codeartifactEndpoint = propOrEnv("codeartifactEndpoint", "CODEARTIFACT_ENDPOINT")
+val codeartifactAuthToken = propOrEnv("codeartifactAuthToken", "CODEARTIFACT_AUTH_TOKEN")
 
 repositories {
     mavenCentral()
