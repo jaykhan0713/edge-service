@@ -39,3 +39,11 @@ server:
     min-response-size: 1024
     mime-types:
       - application/json
+
+platform:
+  outbound:
+    http:
+      clients:
+        voyager:
+          base-url: "voyager-service:8080"
+          read-timeout: 4s

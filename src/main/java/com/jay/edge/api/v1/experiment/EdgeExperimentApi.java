@@ -1,5 +1,8 @@
-package com.jay.edge.api.v1.sample;
+package com.jay.edge.api.v1.experiment;
 
+import com.jay.edge.api.v1.common.error.StandardErrorResponses;
+import com.jay.edge.api.v1.experiment.model.EdgeExperimentResponse;
+import com.jay.edge.api.v1.sample.model.SampleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,18 +10,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import com.jay.edge.api.v1.common.error.openapi.StandardErrorResponses;
-import com.jay.edge.api.v1.sample.model.SampleResponse;
-
 @Tag(
-        name = "Sample",
+        name = "EdgeExperimentApi",
         description = "Endpoints used to demonstrate the edge structure and conventions."
 )
-public interface SampleApi {
+public interface EdgeExperimentApi {
 
     @Operation(
-            summary = "Sample endpoint",
-            description = "Demonstrates API structure, identity extraction, and OpenAPI documentation."
+            summary = "Experiment endpoint",
+            description = "Demonstrates edge service to internal services"
     )
     @StandardErrorResponses
     @ApiResponses({
@@ -31,6 +31,5 @@ public interface SampleApi {
                     )
             )
     })
-
-    SampleResponse get();
+    EdgeExperimentResponse getExperimentResponse(String experimentId);
 }
