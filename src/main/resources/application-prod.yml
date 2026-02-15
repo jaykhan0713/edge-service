@@ -45,5 +45,5 @@ platform:
     http:
       clients:
         voyager:
-          base-url: "voyager-service:8080"
+          base-url: "http://voyager-service:8080"
           read-timeout: 4s
