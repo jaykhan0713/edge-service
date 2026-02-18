@@ -20,7 +20,7 @@ public class ExperimentController implements EdgeExperimentApi {
         this.expService = expService;
     }
 
-    @GetMapping("/api/v1/{experimentId}")
+    @GetMapping("/api/v1/experiments/{experimentId}")
     public EdgeExperimentResponse getExperimentResponse(
             @PathVariable String experimentId
     ) {

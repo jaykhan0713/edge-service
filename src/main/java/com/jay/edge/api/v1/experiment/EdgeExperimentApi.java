@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(
         name = "EdgeExperimentApi",
-        description = "Endpoints used to demonstrate the edge structure and conventions."
+        description = "/api/v1/experiments/{experimentId}"
 )
 public interface EdgeExperimentApi {
 
