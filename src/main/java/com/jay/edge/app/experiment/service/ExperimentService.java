@@ -2,10 +2,12 @@ package com.jay.edge.app.experiment.service;
 
 import java.util.UUID;
 
-import com.jay.edge.core.domain.experiment.ExperimentResult;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+
 import com.jay.edge.core.port.dependency.voyager.VoyagerDependency;
+import com.jay.edge.app.dependency.error.DependencyExceptionTranslator;
+import com.jay.edge.core.domain.experiment.ExperimentResult;
 
 @Service
 @Profile("prod")
@@ -17,7 +19,11 @@ public class ExperimentService {
     }
 
     public ExperimentResult runExperiment() {
-        var result = this.voyagerDependency.voyagerGetJob(UUID.randomUUID());
+        UUID jobId = UUID.randomUUID();
+
+        var result = DependencyExceptionTranslator.execute(
+                () -> voyagerDependency.voyagerGetJob(jobId)
+        );
         return new ExperimentResult(result.msg());
     }
 }
