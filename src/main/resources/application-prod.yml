@@ -22,7 +22,10 @@ management:
       otlp:
         enabled: true #enable exporting SPANS through autoconfiguration
     sampling:
-      probability: 1.0
+      # 0.1 means: 90% of spans will be suffixed with -00 instead of -01 and not exported to adot.
+      # downstream dependencies need to keep sampling at 1.0
+      # note that only a first point of contact microservice needs to have its rate reduced
+      probability: 0.1
   prometheus:
     metrics:
       export:
