@@ -51,8 +51,7 @@ repositories {
             }
 
             content {
-                includeGroup("com.jay.edge")
-                includeGroup("com.jay.voyager")
+                includeGroupByRegex("com\\.jay\\..*")
             }
         }
     }
@@ -80,6 +79,10 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-spring-boot3")
     implementation("io.github.resilience4j:resilience4j-micrometer")
 
+    // MapStruct
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
     //service's own DTOs
     val disableLocalDto = System.getenv("DISABLE_LOCAL_DTO") == "true"
     if (disableLocalDto) {
@@ -90,6 +93,7 @@ dependencies {
 
     //service dependency DTOs
     implementation("com.jay.voyager:voyager-openapi-dtos:0.0.1-SNAPSHOT")
+    implementation("com.jay.apollo:apollo-openapi-dtos:0.0.1-SNAPSHOT")
 
     //IDE mapping such as yml configs with javadocs, generates meta-data json at build time.
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
