@@ -1,0 +1,69 @@
+services:
+  edge-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        CODEARTIFACT_ENDPOINT: ${CODEARTIFACT_ENDPOINT}
+        CODEARTIFACT_AUTH_TOKEN: ${CODEARTIFACT_AUTH_TOKEN}
+    image: edge-service:dev
+    ports:
+      - "8080:8080"        # only edge is exposed to host
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      OTLP_ENABLED: "true"
+      OTLP_ENDPOINT: "http://otel-collector:4318/v1/traces"
+      OTEL_SERVICE_NAME: "edge-service"
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=edge-service"
+    networks: [internal, platform]
+    depends_on:
+      - otel-collector
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus-distributed.yml:/etc/prometheus/prometheus.yml:ro
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    networks: [internal, platform]   # needs platform to scrape downstream
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks: [internal]
+    depends_on:
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+    networks: [internal]
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./docker/otel/otel-collector.yml:/etc/otelcol/config.yml:ro
+    command: ["--config=/etc/otelcol/config.yml"]
+    networks: [internal, platform]
+    depends_on:
+      - jaeger
+
+networks:
+  platform:
+    external: true
+  internal:
+    driver: bridge
+
+volumes:
+  grafana-data:

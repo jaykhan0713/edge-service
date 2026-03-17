@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: edge-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['edge-service:8080']
+
+  - job_name: voyager-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['voyager-service:8080']
+
+  - job_name: apollo-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ 'apollo-service:8080' ]

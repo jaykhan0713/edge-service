@@ -1,7 +1,6 @@
 package com.jay.edge.web.mvc.controller.v1.experiment;
 
 import com.jay.edge.core.context.identity.IdentityContextHolder;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +10,6 @@ import com.jay.edge.api.v1.experiment.EdgeExperimentApi;
 import com.jay.edge.api.v1.experiment.model.EdgeExperimentResponse;
 
 @RestController
-@Profile("prod")
 public class ExperimentController implements EdgeExperimentApi {
 
     private final ExperimentService expService;
