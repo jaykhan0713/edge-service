@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.jay.apollo.api.v1.shopping.ShoppingProductsResponse;
-import com.jay.edge.core.domain.dependency.apollo.ApolloProduct;
-import com.jay.edge.core.port.dependency.apollo.ApolloDependency;
+import com.jay.edge.core.domain.dependency.shopping.Product;
+import com.jay.edge.core.port.dependency.shopping.ShoppingDependency;
 import com.jay.edge.infra.outbound.http.client.rest.adapter.apollo.mapping.ApolloMapper;
 import com.jay.edge.infra.outbound.http.client.rest.error.RestClientExceptionTranslator;
 import org.springframework.web.client.RestClient;
 
-public class ApolloRestClientAdapter implements ApolloDependency {
+public class ApolloRestClientAdapter implements ShoppingDependency {
 
     private final RestClient restClient;
     private final String clientName;
@@ -31,7 +31,7 @@ public class ApolloRestClientAdapter implements ApolloDependency {
     }
 
     @Override
-    public List<ApolloProduct> shoppingProductsResponse() {
+    public List<Product> products() {
         var responseDto = RestClientExceptionTranslator.execute(
                 () -> {
                     var spec = restClient
@@ -46,7 +46,7 @@ public class ApolloRestClientAdapter implements ApolloDependency {
                 clientName
         );
 
-        if (responseDto.productDtos() == null) {
+        if (responseDto == null || responseDto.productDtos() == null) {
             return Collections.EMPTY_LIST;
         }
 

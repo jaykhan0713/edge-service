@@ -5,6 +5,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import io.micrometer.context.ContextExecutorService;
+import io.micrometer.context.ContextSnapshot;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,9 +26,13 @@ public class VirtualThreadsConfiguration {
      *  executor (do not use the ForkJoin common pool). Choose per-use-case policies such as fail-fast,
      *  join-all, or partial results with explicit exception handling. If async patterns repeat across
      *  services, consider introducing a small infra helper or port at that time.
+     *
+     * NOTE on ContextExecutorService, wraps the executor so Micrometer related Threadlocals are propagated
+     * i.e MDC and TraceContext
      */
     @Bean(name = "platformVirtualThreadExecutorService", destroyMethod = "close")
     ExecutorService platformVirtualThreadExecutorService(ThreadFactory platformVirtualThreadFactory) {
-        return Executors.newThreadPerTaskExecutor(platformVirtualThreadFactory);
+        var delegate = Executors.newThreadPerTaskExecutor(platformVirtualThreadFactory);
+        return ContextExecutorService.wrap(delegate, ContextSnapshot::captureAll);
     }
 }

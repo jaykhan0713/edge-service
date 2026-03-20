@@ -164,4 +164,7 @@ platform: # namespace for Spring configuration keys
         voyager:
           base-url: "http://voyager-service:8080"
           read-timeout: 4s
+        apollo:
+          base-url: "http://apollo-service:8080"
+          read-timeout: 4s
 

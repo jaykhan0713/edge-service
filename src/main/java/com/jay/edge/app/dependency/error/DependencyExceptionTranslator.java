@@ -18,4 +18,9 @@ public final class DependencyExceptionTranslator {
             throw new ApiException(ErrorType.DEPENDENCY_UNAVAILABLE, ex);
         }
     }
+
+    //used to wrap supplier around above execute, useful for passing to Futures
+    public static <T> Supplier<T> wrapExecution(Supplier<T> supplier) {
+        return () -> execute(supplier);
+    }
 }
