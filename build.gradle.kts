@@ -83,9 +83,6 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
-    // Jackson
-    implementation("tools.jackson.module:jackson-module-blackbird:3.0.2")
-
     //service's own DTOs
     val disableLocalDto = System.getenv("DISABLE_LOCAL_DTO") == "true"
     if (disableLocalDto) {
