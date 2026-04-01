@@ -11,11 +11,11 @@ import tools.jackson.module.blackbird.BlackbirdModule;
 public class SerializationConfiguration {
 
     // Don't touch the recycler pool — Jackson 3.x default (concurrentDequePool) is correct for virtual threads
-    @Bean
-    public ObjectMapper objectMapper() {
-        return JsonMapper.builder()
-                .disable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
-                .addModule(new BlackbirdModule())
-                .build();
-    }
+//    @Bean
+//    public ObjectMapper objectMapper() {
+//        return JsonMapper.builder()
+//                .disable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+//                .addModule(new BlackbirdModule())
+//                .build();
+//    }
 }
