@@ -19,6 +19,7 @@ server: # embedded servlet container configs
 
   # max-http-request-header-size: 16KB # optional
 
+
 spring:
   application:
     name: edge-service
@@ -33,6 +34,12 @@ spring:
     # This application is a servlet-based web application.
     # Auto configure embedded servlet container, Spring MVC, registers the DispatcherServlet
     web-application-type: servlet
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_jhmHPfHuv
 
 management:
   endpoints:

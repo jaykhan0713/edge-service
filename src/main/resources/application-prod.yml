@@ -4,6 +4,11 @@ spring:
       on-profile: prod
   lifecycle:
     timeout-per-shutdown-phase: 30s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${ISSUER_URI}
 
 management:
   endpoints:
@@ -49,4 +54,7 @@ platform:
       clients:
         voyager:
           base-url: "http://voyager-service:8080"
+          read-timeout: 4s
+        apollo:
+          base-url: "http://apollo-service:8080"
           read-timeout: 4s

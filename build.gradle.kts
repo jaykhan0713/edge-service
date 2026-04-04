@@ -63,7 +63,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
-
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server") //security core + jwt support
+    
     //micrometer
     implementation("io.micrometer:micrometer-registry-prometheus")
     /* For vthread metrics, including pinned/start/unpark events */
