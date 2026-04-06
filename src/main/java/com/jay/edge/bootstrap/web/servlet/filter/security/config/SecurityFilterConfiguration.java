@@ -24,7 +24,7 @@ public class SecurityFilterConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            //JwtAuthenticationConverter converter,
+            JwtAuthenticationConverter converter,
             AuthenticationEntryPoint authenticationEntryPoint
     ) {
         return http
@@ -38,12 +38,13 @@ public class SecurityFilterConfiguration {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
+                        .requestMatchers("/api/smoke").permitAll()
                         .requestMatchers("/api/v1/experiments/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        //.jwt(jwt -> jwt.jwtAuthenticationConverter(converter))
-                        .jwt(Customizer.withDefaults())
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(converter))
+                        //.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(authenticationEntryPoint)
                 )
                 .anonymous(Customizer.withDefaults()) //enables anonymous token
@@ -57,20 +58,19 @@ public class SecurityFilterConfiguration {
         );
     }
 
-    //TODO re-add when moving client to Oauth2
-//    @Bean
-//    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-//        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-//        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-//            String scope = jwt.getClaimAsString("scope");
-//            if (scope == null || !scope.contains("openid")) {
-//                throw new JwtException("Missing required scope: openid");
-//            }
-//            return List.of(new SimpleGrantedAuthority("SCOPE_openid"));
-//        });
-//
-//        return converter;
-//    }
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            String scope = jwt.getClaimAsString("scope");
+            if (scope == null || !scope.contains("openid")) {
+                throw new JwtException("Missing required scope: openid");
+            }
+            return List.of(new SimpleGrantedAuthority("SCOPE_openid"));
+        });
+
+        return converter;
+    }
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(ErrorResponseWriter errorResponseWriter) {
