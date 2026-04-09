@@ -1,5 +1,6 @@
 package com.jay.edge.bootstrap.web.servlet.filter.security.config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.jay.edge.core.error.api.ErrorType;
@@ -8,17 +9,19 @@ import org.springframework.boot.security.oauth2.server.resource.autoconfigure.OA
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity //active security methods i.e @PreAuthorize
 public class SecurityFilterConfiguration {
 
     @Bean
@@ -44,10 +47,9 @@ public class SecurityFilterConfiguration {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(converter))
-                        //.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(authenticationEntryPoint)
                 )
-                .anonymous(Customizer.withDefaults()) //enables anonymous token
+                .anonymous(Customizer.withDefaults()) //enables anonymous tokens that dont go through Bearer Filter with Authorization header
                 .build();
     }
 
@@ -63,10 +65,10 @@ public class SecurityFilterConfiguration {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
             String scope = jwt.getClaimAsString("scope");
-            if (scope == null || !scope.contains("openid")) {
-                throw new JwtException("Missing required scope: openid");
-            }
-            return List.of(new SimpleGrantedAuthority("SCOPE_openid"));
+            if (scope == null) return List.of();
+            return Arrays.stream(scope.split(" "))
+                    .map(s -> (GrantedAuthority) new SimpleGrantedAuthority("SCOPE_" + s))
+                    .toList();
         });
 
         return converter;
