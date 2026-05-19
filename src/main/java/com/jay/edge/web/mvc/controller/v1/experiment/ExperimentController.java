@@ -54,6 +54,13 @@ public class ExperimentController implements EdgeExperimentApi {
     public ResponseEntity<byte[]> convertHtmlToPdf(@RequestPart("files") MultipartFile htmlFile) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDispositionFormData("attachment", "output.pdf");
-        return new ResponseEntity<>(pdfConverterService.runExperiment(htmlFile), headers, HttpStatus.OK);
+        return new ResponseEntity<>(pdfConverterService.runConvertHtmlToPdfExperiment(htmlFile), headers, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/convert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> convertOfficeToPdf(@RequestPart("files") MultipartFile htmlFile) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDispositionFormData("attachment", "output.pdf");
+        return new ResponseEntity<>(pdfConverterService.convertOfficeToPdfExperiment(htmlFile), headers, HttpStatus.OK);
     }
 }

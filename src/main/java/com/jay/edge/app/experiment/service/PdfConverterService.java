@@ -17,7 +17,11 @@ public class PdfConverterService {
         this.gotenbergDependency = gotenbergDependency;
     }
 
-    public byte[] runExperiment(MultipartFile htmlFile) {
+    public byte[] runConvertHtmlToPdfExperiment(MultipartFile htmlFile) {
         return gotenbergDependency.convertHtmlToPdf(htmlFile);
+    }
+
+    public byte[] convertOfficeToPdfExperiment(MultipartFile officeFile) {
+        return gotenbergDependency.convertOfficeToPdf(officeFile);
     }
 }

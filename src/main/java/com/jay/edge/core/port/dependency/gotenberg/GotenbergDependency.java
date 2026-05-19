@@ -4,4 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface GotenbergDependency {
     byte[] convertHtmlToPdf(MultipartFile htmlFile);
+
+    byte[] convertOfficeToPdf(MultipartFile officeFile);
 }

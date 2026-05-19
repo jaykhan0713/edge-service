@@ -15,37 +15,49 @@ public class GotenbergRestClientAdapter implements GotenbergDependency {
 
     private final RestClient restClient;
     private final String clientName;
-    private final String uri;
+    private final String htmlUri;
+    private final String officeUri;
 
     public GotenbergRestClientAdapter(
             RestClient restClient,
             String clientName,
-            String uri
+            String htmlUri, //chromium
+            String officeUri //libreoffice
     ) {
         this.restClient = restClient;
         this.clientName = clientName;
-        this.uri = uri;
+        this.htmlUri = htmlUri;
+        this.officeUri = officeUri;
     }
 
     @Override
     public byte[] convertHtmlToPdf(MultipartFile htmlFile) {
+        return convertMultipartToFile(htmlFile, htmlUri);
+    }
+
+    @Override
+    public byte[] convertOfficeToPdf(MultipartFile officeFile) {
+        return convertMultipartToFile(officeFile, officeUri);
+    }
+
+    private byte[] convertMultipartToFile(MultipartFile file, String uri) {
         return RestClientExceptionTranslator.execute(
                 () -> {
                     var body = new LinkedMultiValueMap<String, Object>();
 
                     try {
-                        body.add("files", new ByteArrayResource(htmlFile.getBytes()) {
+                        body.add("files", new ByteArrayResource(file.getBytes()) {
                             @Override
                             public String getFilename() {
-                                return htmlFile.getOriginalFilename();
+                                return file.getOriginalFilename();
                             }
                         });
                     } catch (IOException e) {
-                        throw new RuntimeException("Failed to read HTML file", e);
+                        throw new RuntimeException("Failed to read multipart file", e);
                     }
 
                     var spec = restClient.post()
-                            .uri(this.uri)
+                            .uri(uri)
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .body(body)
                             .retrieve();
