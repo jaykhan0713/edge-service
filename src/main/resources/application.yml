@@ -174,4 +174,7 @@ platform: # namespace for Spring configuration keys
         apollo:
           base-url: "http://apollo-service:8080"
           read-timeout: 4s
+        gotenberg:
+          base-url: "http://gotenberg-service.jay-platform-api.com"
+          read-timeout: 900s
 

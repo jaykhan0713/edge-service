@@ -43,6 +43,7 @@ public class SecurityFilterConfiguration {
                         ).permitAll()
                         .requestMatchers("/api/smoke").permitAll()
                         .requestMatchers("/api/v1/experiments/**").permitAll()
+                        .requestMatchers("/api/v1/pdfconverter/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
